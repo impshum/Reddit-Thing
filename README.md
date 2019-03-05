@@ -20,6 +20,7 @@
 - Go here https://old.reddit.com/prefs/apps/
 - Create a new script app
 - Grab the key and token
+- Open up config.py and do your thing
 
 ### Flairs
 
