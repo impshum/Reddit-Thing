@@ -2,7 +2,19 @@ import praw
 import pickledb
 from time import sleep
 from psaw import PushshiftAPI
+import schedule
 from config import *
+
+
+class C:
+    W, G, R, P, Y, C = '\033[0m', '\033[92m', '\033[91m', '\033[95m', '\033[93m', '\033[36m'
+
+
+print(f"""{C.Y}
+╦═╗╔═╗╔╦╗╔╦╗╦╔╦╗  ╔═╗╔═╗╦
+╠╦╝║╣  ║║ ║║║ ║   ╠╣ ╠═╝║
+╩╚═╚═╝═╩╝═╩╝╩ ╩   ╚  ╩  ╩ v1.0
+{C.W}""")
 
 flairs = pickledb.load('data/flairs.db', False)
 messaged = pickledb.load('data/messaged.db', False)
@@ -18,10 +30,6 @@ reddit = praw.Reddit(client_id=client_id,
 api = PushshiftAPI()
 
 
-class C:
-    W, G, R, P, Y, C = '\033[0m', '\033[92m', '\033[91m', '\033[95m', '\033[93m', '\033[36m'
-
-
 def gather():
     submissions = api.search_submissions(
         subreddit=target_sub, aggs='author+author_flair_css_class')
@@ -34,9 +42,11 @@ def gather():
             flair = post.author_flair_text
             if flair in target_flairs:
                 if not flairs.exists(author):
+                    print(f'{C.G}Added {author} {flair}{C.W}')
                     flairs.set(author, flair)
                     flairs.dump()
-                    print(author, flair)
+                else:
+                    print(f'{C.R}Exists {author} {flair}{C.W}')
 
 
 def message():
@@ -59,7 +69,7 @@ def invite():
             invited.dump()
             if not test_mode:
                 reddit.subreddit(secret_sub).contributor.add(author)
-            print(author, flair)
+            print(f'{C.G} Invited {author} {flair}{C.W}')
             sleep(100)
 
 
@@ -97,7 +107,7 @@ def clean():
     flairs.dump()
 
 
-if __name__ == '__main__':
+def main():
     if gather_users:
         gather()
     if clean_users:
@@ -106,3 +116,12 @@ if __name__ == '__main__':
         message()
     if invite_users:
         invite()
+
+
+schedule.every().day.at("00:00").do(main)
+
+if __name__ == '__main__':
+    main()
+    while True:
+        schedule.run_pending()
+        sleep(1)
