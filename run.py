@@ -3,6 +3,7 @@ import pickledb
 from time import sleep
 from psaw import PushshiftAPI
 
+test_mode = True
 
 client_id = 'XXXX'
 client_secret = 'XXXX'
@@ -52,7 +53,8 @@ def message():
             flair = flairs.get(author)
             messaged.set(author, flair)
             messaged.dump()
-            reddit.redditor(author).message(message_title, message_text)
+            if not test_mode:
+                reddit.redditor(author).message(message_title, message_text)
             print(author, flair)
             sleep(100)
 
@@ -63,7 +65,8 @@ def invite():
             flair = flairs.get(author)
             invited.set(author, flair)
             invited.dump()
-            reddit.subreddit(secret_sub).contributor.add(author)
+            if not test_mode:
+                reddit.subreddit(secret_sub).contributor.add(author)
             print(author, flair)
             sleep(100)
 

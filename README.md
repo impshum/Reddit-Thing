@@ -37,4 +37,4 @@ Flip ```test_mode``` on and off with True/False
 
 - Open up a terminal/prompt
 - cd into the directory you put the Reddit-Thing
-- ```python run.py``` will run the script 
+- ```python run.py``` will run the script
