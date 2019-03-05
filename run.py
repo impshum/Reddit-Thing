@@ -2,21 +2,7 @@ import praw
 import pickledb
 from time import sleep
 from psaw import PushshiftAPI
-
-test_mode = True
-
-client_id = 'XXXX'
-client_secret = 'XXXX'
-reddit_user = 'XXXX'
-reddit_pass = 'XXXX'
-
-target_sub = 'The_Donald'
-secret_sub = 'XXXX'
-target_flairs = ['SUPER ELITE', 'OVER 9000 LEGS!!']
-
-message_title = 'XXXX'
-message_text = 'XXXX'
-
+from config import *
 
 flairs = pickledb.load('data/flairs.db', False)
 messaged = pickledb.load('data/messaged.db', False)
@@ -29,9 +15,14 @@ reddit = praw.Reddit(client_id=client_id,
                      username=reddit_user,
                      password=reddit_pass)
 
+api = PushshiftAPI()
+
+
+class C:
+    W, G, R, P, Y, C = '\033[0m', '\033[92m', '\033[91m', '\033[95m', '\033[93m', '\033[36m'
+
 
 def gather():
-    api = PushshiftAPI()
     submissions = api.search_submissions(
         subreddit=target_sub, aggs='author+author_flair_css_class')
     comments = api.search_comments(
@@ -72,6 +63,46 @@ def invite():
             sleep(100)
 
 
-gather()
-message()
-invite()
+def get_submission_count(user, api):
+    submissions = api.search_comments(
+        subreddit=target_sub, author=user, aggs='subreddit')
+    for x in submissions:
+        return x['subreddit'][0]['doc_count']
+
+
+def get_comment_count(user, api):
+    comments = api.search_submissions(
+        subreddit=target_sub, author=user, aggs='subreddit')
+    for x in comments:
+        return x['subreddit'][0]['doc_count']
+
+
+def check_count():
+    removal = []
+    for author in flairs.getall():
+        s_count = get_submission_count(author, api)
+        c_count = get_comment_count(author, api)
+        if s_count + c_count >= total_posts:
+            print(f'{C.G}{author} survived the cut{C.W}')
+        else:
+            removal.append(author)
+            print(f'{C.R}{author} has been cut{C.W}')
+    return removal
+
+
+def clean():
+    removal_list = check_count()
+    for x in removal_list:
+        flairs.rem(x)
+    flairs.dump()
+
+
+if __name__ == '__main__':
+    if gather_users:
+        gather()
+    if clean_users:
+        clean()
+    if message_users:
+        message()
+    if invite_users:
+        invite()
