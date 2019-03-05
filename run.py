@@ -17,6 +17,7 @@ target_flairs = ['SUPER ELITE', 'OVER 9000 LEGS!!']
 message_title = 'XXXX'
 message_text = 'XXXX'
 
+
 flairs = pickledb.load('data/flairs.db', False)
 messaged = pickledb.load('data/messaged.db', False)
 invited = pickledb.load('data/invited.db', False)
