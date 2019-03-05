@@ -32,7 +32,7 @@ Best to just delete the .db file completely as the script creates the file when 
 
 ### Test mode
 
-Flip ```test_mode``` on and off with True/False
+Flip ```test_mode``` on and off with 0/1
 
 ### Get ready to run
 
